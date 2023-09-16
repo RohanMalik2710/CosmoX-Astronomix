@@ -7,8 +7,17 @@ function Forcast(props) {
   const [query, setQuery] = useState("");
   const [error, setError] = useState("");
   const [weather, setWeather] = useState({});
+  const [planetaryData, setPlanetaryData] = useState({});
 
-  const search = (city) => {
+  const axios = require('axios');
+
+  const username = '33eb0470-dcd0-4412-9ca5-4616b167220d';
+  const password = '18f1c87f9732e94c18d55adcf78c559602df7f92f90b2672d7d9a106b8f6541497935a08da14fcf968e53c3e81c646534ec767f415cf84d2f98e614a381c3abfac148498de3fc2246d6818acb61c5a7690b845cc6e0359750435592aaf8dfd459f97afb9895088729be6a6d608fd7b98';
+
+  // Combine username and password with a colon and encode in base64
+  const authString = btoa(`${username}:${password}`);
+
+  const search = () => {
     axios
       .get(
         `${apiKeys.base}weather?q=${
@@ -25,7 +34,33 @@ function Forcast(props) {
         setQuery("");
         setError({ message: "Not Found", query: query });
       });
-  };
+    
+    axios
+      .get('https://api.astronomyapi.com/api/v2/bodies', {
+      headers: {
+        Authorization: `Basic ${authString}`
+      },
+      params: {
+        longitude : '-84.39733',
+        latitude : '33.775867',
+        elevation : '50',
+        from_date: '2018-12-20',
+        to_date: '2018-12-22',
+        time: '08:00:00'
+      }
+      })
+      .then(response => {
+      // Handle the API response here
+        setPlanetaryData(response.data);
+        console.log(planetaryData);
+      })
+      .catch(error => {
+      // Handle any errors here
+        setError(error);
+        console.log(error);
+      });
+    };
+
   function checkTime(i) {
     if (i < 10) {
       i = "0" + i;
@@ -40,12 +75,12 @@ function Forcast(props) {
   };
 
   useEffect(() => {
-    search("Delhi");
+    search("Chandigarh");
   }, []);
 
   return (
     
-    <div className="forecast">
+    <div className="forecast">    
       <div className="forecast-icon">
         <ReactAnimatedWeather
           icon={props.icon}
