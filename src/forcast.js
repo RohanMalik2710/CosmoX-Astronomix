@@ -17,7 +17,7 @@ function Forcast(props) {
   // Combine username and password with a colon and encode in base64
   const authString = btoa(`${username}:${password}`);
 
-  const search = () => {
+  const search = (city) => {
     axios
       .get(
         `${apiKeys.base}weather?q=${
